@@ -24,11 +24,11 @@ def new_ball(BALL_RADIUS_RANGE = []):
     '''рисует новый шарик
     :param BALL_RADIUS_RANGE = []: [mib_ball_radius, max_ball_radius]
     '''
-    r = randint(BALL_RADIUS_RANGE[0], BALL_RADIUS_RANGE[1])
-    x = randint(r, screen_width - r)
-    y = randint(r, screen_height - r)
+    ball_radius = randint(BALL_RADIUS_RANGE[0], BALL_RADIUS_RANGE[1])
+    ball_x = randint(ball_radius, screen_width - ball_radius)
+    ball_y = randint(ball_radius, screen_height - ball_radius)
     color = COLORS[randint(0, len(COLORS) - 1)]
-    circle(screen, color, (x, y), r)
+    circle(screen, color, (ball_x, ball_y), ball_radius)
 
 
 screen.fill(WHITE)
