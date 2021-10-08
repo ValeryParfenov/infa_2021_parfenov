@@ -5,10 +5,11 @@ from random import randint
 pygame.init()
 
 # Задание констант
-FPS = 2 # частота обновления экрана
+FPS = 1 # частота обновления экрана
 screen_width, screen_height = screen_size = (700, 700) # параметры размера экранов
 screen = pygame.display.set_mode(screen_size)
 BALL_RADIUS_RANGE = [10, 50] # минимальный и максимальный размеры шарика
+COUNTER = 0 # счётчик очков
 
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
@@ -21,14 +22,29 @@ WHITE = (255, 255, 255)
 COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN, BLACK] #список всех возможных окрасок шариков
 
 def new_ball(BALL_RADIUS_RANGE = []):
-    '''рисует новый шарик
-    :param BALL_RADIUS_RANGE = []: [mib_ball_radius, max_ball_radius]
+    '''рисует новый шарик со случайными координатами и радиусом случайным в пределах радиуса
+    :param BALL_RADIUS_RANGE = []: [min_ball_radius, max_ball_radius]
     '''
+    global ball_radius, ball_x, ball_y
     ball_radius = randint(BALL_RADIUS_RANGE[0], BALL_RADIUS_RANGE[1])
     ball_x = randint(ball_radius, screen_width - ball_radius)
     ball_y = randint(ball_radius, screen_height - ball_radius)
     color = COLORS[randint(0, len(COLORS) - 1)]
     circle(screen, color, (ball_x, ball_y), ball_radius)
+
+def click_check_slot(ball_x, ball_y, ball_r, mouse_button, mouse_coords = ()):
+    '''функция проверяет, попал ли пользователь в шарик. Если попал - возвращается 1, иначе - 0
+    :param ball_x: - координата шарика х
+    :param ball_y: - координата шарика у
+    :param ball_r: - радиус шарика
+    :param mouse_coords: - координаты нажатия
+    :param mouse_button: - номер нажатой кнопки
+    '''
+    distance = int(((ball_x - mouse_coords[0]) ** 2 + (ball_y - mouse_coords[1]) ** 2) ** 0.5)
+    if(ball_r >= distance):
+        return 1
+    else:
+        return 0
 
 
 screen.fill(WHITE)
@@ -39,10 +55,11 @@ finished = False # флажок, показывающий, не произошё
 while not finished:
     clock.tick(FPS)
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        if event.type == pygame.QUIT: # проверка на QUIT
             finished = True
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            print('Click!')
+        elif event.type == pygame.MOUSEBUTTONDOWN: # обработка нажатия мыши
+            COUNTER += click_check_slot(ball_x, ball_y, ball_radius, event.button, event.pos)
+            print(COUNTER)
     new_ball(BALL_RADIUS_RANGE)
     pygame.display.update()
     screen.fill(WHITE)
