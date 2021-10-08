@@ -10,7 +10,7 @@ screen_width, screen_height = screen_size = (700, 700)  # параметры р�
 screen = pygame.display.set_mode(screen_size)
 BALL_RADIUS_RANGE = [10, 50]  # минимальный и максимальный размеры шарика
 font1 = pygame.font.Font(None, 40)  # шрифт для счётчика
-BALL_LIFE_TIME = 30 # время жизни шарика в фреймах
+BALL_LIFE_TIME = 30  # время жизни шарика в фреймах
 
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
@@ -58,7 +58,7 @@ screen.fill(WHITE)
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False  # флажок, показывающий, не произошёл ли QUIT
-ball = ball_create(BALL_RADIUS_RANGE, screen_size) # создаём первый шарик
+ball = ball_create(BALL_RADIUS_RANGE, screen_size)  # создаём первый шарик
 local_time = 0
 
 while not finished:
@@ -73,7 +73,7 @@ while not finished:
     if (local_time == BALL_LIFE_TIME):
         ball = ball_create(BALL_RADIUS_RANGE, screen_size)  # создаём шарик
         local_time = 0
-    circle(screen, ball[3], (ball[0], ball[1]), ball[2]) # отрисовываем шарик
+    circle(screen, ball[3], (ball[0], ball[1]), ball[2])  # отрисовываем шарик
     text1 = font1.render(str(counter), False, (0, 0, 0))  # задаём счётчик
     screen.blit(text1, (10, 10))  # отображаем счётчик
     pygame.display.update()
