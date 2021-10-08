@@ -5,7 +5,7 @@ from random import randint
 pygame.init()
 
 # Задание констант
-FPS = 1  # частота обновления экрана
+FPS = 30  # частота обновления экрана
 screen_width, screen_height = screen_size = (700, 700)  # параметры размера экранов
 screen = pygame.display.set_mode(screen_size)
 BALL_RADIUS_RANGE = [10, 50]  # минимальный и максимальный размеры шарика
@@ -25,16 +25,16 @@ COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN, BLACK]  # список все
 counter = 0  # счётчик очков
 
 
-def new_ball(BALL_RADIUS_RANGE=[]):
-    '''рисует новый шарик со случайными координатами и радиусом случайным в пределах радиуса
+def ball_create(BALL_RADIUS_RANGE=[], screen_size=()):
+    '''создаёт параметры шарика и возврашает их массивом
     :param BALL_RADIUS_RANGE = []: [min_ball_radius, max_ball_radius]
     '''
     global ball_radius, ball_x, ball_y
     ball_radius = randint(BALL_RADIUS_RANGE[0], BALL_RADIUS_RANGE[1])
-    ball_x = randint(ball_radius, screen_width - ball_radius)
-    ball_y = randint(ball_radius, screen_height - ball_radius)
+    ball_x = randint(ball_radius, screen_size[0] - ball_radius)
+    ball_y = randint(ball_radius, screen_size[1] - ball_radius)
     color = COLORS[randint(0, len(COLORS) - 1)]
-    circle(screen, color, (ball_x, ball_y), ball_radius)
+    return [ball_x, ball_y, ball_radius, color]
 
 
 def click_check_slot(ball_x, ball_y, ball_r, mouse_button, mouse_coords=()):
@@ -57,6 +57,7 @@ screen.fill(WHITE)
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False  # флажок, показывающий, не произошёл ли QUIT
+local_time = 0
 
 while not finished:
     clock.tick(FPS)
@@ -64,10 +65,11 @@ while not finished:
         if event.type == pygame.QUIT:  # проверка на QUIT
             finished = True
         elif event.type == pygame.MOUSEBUTTONDOWN:  # обработка нажатия мыши
-            if(click_check_slot(ball_x, ball_y, ball_radius, event.button, event.pos) == 1):
+            if (click_check_slot(ball_x, ball_y, ball_radius, event.button, event.pos) == 1):
                 counter += 1
                 break
-    new_ball(BALL_RADIUS_RANGE)
+    ball = ball_create(BALL_RADIUS_RANGE, screen_size) # создаём шарик
+    circle(screen, ball[3], (ball[0], ball[1]), ball[2]) # отрисовываем шарик
     text1 = font1.render(str(counter), False, (0, 0, 0))  # задаём счётчик
     screen.blit(text1, (10, 10))  # отображаем счётчик
     pygame.display.update()
