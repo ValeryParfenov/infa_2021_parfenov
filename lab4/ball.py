@@ -6,10 +6,10 @@ pygame.init()
 
 # Задание констант
 FPS = 30  # частота обновления экрана
-screen_width, screen_height = screen_size = (700, 700)  # параметры размера экранов
-screen = pygame.display.set_mode(screen_size)
+SCREEN_WIDTH, SCREEN_HEIGHT = SCREEN_SIZE = (700, 700)  # параметры размера экранов
+screen = pygame.display.set_mode(SCREEN_SIZE)
 BALL_RADIUS_RANGE = [30, 50]  # минимальный и максимальный размеры шарика
-font1 = pygame.font.Font(None, 40)  # шрифт для счётчика
+FONT1 = pygame.font.Font(None, 40)  # шрифт для счётчика
 BALL_VELOCITY_RANGE = [3, 20]  # минимальная и максимальная скорость шарика
 BALLS_AMOUNT = 6 # количество шариков на экране
 
@@ -23,25 +23,26 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN, BLACK]  # список всех возможных окрасок шариков
 
-# задаём реоеменные
+# задаём пеоеменные
 counter = 0  # счётчик очков
 
 
-def ball_create(BALL_RADIUS_RANGE=[], screen_size=(), BALL_VELOCITY_RANGE=[]):
+def ball_create(BALL_RADIUS_RANGE=[], SCREEN_SIZE=(), BALL_VELOCITY_RANGE=[]):
     '''
     создаёт параметры шарика и возврашает их массивом, последний параметр массива - указания типа шарика,
     все шарики создаваемые этой функцией нулевого типа
     :param BALL_RADIUS_RANGE = []: [min_ball_radius, max_ball_radius]
+    :param SCREEN_SIZE: размер экрана
     :param BALL_VELOCITY_RANGE: - диапозон скоростей скоростей шарика по оси (в пикселях/ фрейм)
     '''
     ball_radius = randint(BALL_RADIUS_RANGE[0], BALL_RADIUS_RANGE[1])
-    ball_x = randint(ball_radius, screen_size[0] - ball_radius)
-    ball_y = randint(ball_radius, screen_size[1] - ball_radius)
+    ball_x = randint(ball_radius, SCREEN_SIZE[0] - ball_radius)
+    ball_y = randint(ball_radius, SCREEN_SIZE[1] - ball_radius)
     ball_v_x = randint(BALL_VELOCITY_RANGE[0], BALL_VELOCITY_RANGE[1]) * ((-1) ** randint(1, 2))
     ball_v_y = randint(BALL_VELOCITY_RANGE[0], BALL_VELOCITY_RANGE[1]) * ((-1) ** randint(1, 2))
     color = COLORS[randint(0, len(COLORS) - 1)]
-    balls = [ball_x, ball_y, ball_v_x, ball_v_y, ball_radius, color, 0]
-    return balls
+    ball = [ball_x, ball_y, ball_v_x, ball_v_y, ball_radius, color, 0]
+    return ball
 
 
 def click_check_slot(balls, BALLS_AMOUNT, mouse_button, mouse_coords=()):
@@ -89,7 +90,7 @@ finished = False  # флажок, показывающий, не произош�
 
 balls = [[] * 7] * BALLS_AMOUNT
 for i in range(0, BALLS_AMOUNT):
-    balls[i] = ball_create(BALL_RADIUS_RANGE, screen_size, BALL_VELOCITY_RANGE)
+    balls[i] = ball_create(BALL_RADIUS_RANGE, SCREEN_SIZE, BALL_VELOCITY_RANGE)
 
 
 while not finished: # главный цикл
@@ -101,11 +102,11 @@ while not finished: # главный цикл
             ball_id = click_check_slot(balls, BALLS_AMOUNT, event.button, event.pos)
             if (ball_id != -1):
                 counter += 1
-                balls[ball_id] = ball_create(BALL_RADIUS_RANGE, screen_size, BALL_VELOCITY_RANGE)
-    balls = ball_motion(balls, BALLS_AMOUNT, screen_size)
+                balls[ball_id] = ball_create(BALL_RADIUS_RANGE, SCREEN_SIZE, BALL_VELOCITY_RANGE)
+    balls = ball_motion(balls, BALLS_AMOUNT, SCREEN_SIZE)
     for i in range(0, BALLS_AMOUNT): # отрисовываем шарики
         circle(screen, balls[i][5], (balls[i][0], balls[i][1]), balls[i][4])
-    text1 = font1.render(str(counter), False, (0, 0, 0))  # задаём счётчик
+    text1 = FONT1.render(str(counter), False, (0, 0, 0))  # задаём счётчик
     screen.blit(text1, (10, 10))  # отображаем счётчик
     pygame.display.update()
     screen.fill(WHITE)
