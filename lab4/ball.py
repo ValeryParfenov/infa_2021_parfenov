@@ -10,8 +10,7 @@ screen_width, screen_height = screen_size = (700, 700)  # параметры р�
 screen = pygame.display.set_mode(screen_size)
 BALL_RADIUS_RANGE = [10, 50]  # минимальный и максимальный размеры шарика
 font1 = pygame.font.Font(None, 40)  # шрифт для счётчика
-BALL_LIFE_TIME = 200  # время жизни шарика в фреймах
-BALL_VELOCITY_RANGE = [1, 10]  # минимальная и максимальная скорость шарика
+BALL_VELOCITY_RANGE = [3, 20]  # минимальная и максимальная скорость шарика
 
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
@@ -73,7 +72,7 @@ def ball_motion(ball=[], screensize=[]):
         ball[3] = randint(BALL_VELOCITY_RANGE[0], BALL_VELOCITY_RANGE[1])
     elif (screensize[1] - ball[1] - ball[3] < ball[4]):
         ball[3] = -1 * randint(BALL_VELOCITY_RANGE[0], BALL_VELOCITY_RANGE[1])
-    ball[0] += ball[2] # осуществляется перемещение шарика
+    ball[0] += ball[2]  # осуществляется перемещение шарика
     ball[1] += ball[3]
     return ball
 
@@ -83,7 +82,6 @@ pygame.display.update()
 clock = pygame.time.Clock()
 finished = False  # флажок, показывающий, не произошёл ли QUIT
 ball = ball_create(BALL_RADIUS_RANGE, screen_size, BALL_VELOCITY_RANGE)  # создаём первый шарик
-local_time = 0
 
 while not finished:
     clock.tick(FPS)
@@ -96,16 +94,11 @@ while not finished:
                 ball = ball_create(BALL_RADIUS_RANGE, screen_size, BALL_VELOCITY_RANGE)
                 local_time = 0
                 break
-    if (local_time == BALL_LIFE_TIME):
-        ball = ball_create(BALL_RADIUS_RANGE, screen_size, BALL_VELOCITY_RANGE)  # создаём шарик
-        local_time = 0
-    else:
-        ball = ball_motion(ball, screen_size)
+    ball = ball_motion(ball, screen_size)
     circle(screen, ball[5], (ball[0], ball[1]), ball[4])  # отрисовываем шарик
     text1 = font1.render(str(counter), False, (0, 0, 0))  # задаём счётчик
     screen.blit(text1, (10, 10))  # отображаем счётчик
     pygame.display.update()
     screen.fill(WHITE)
-    local_time += 1
 
 pygame.quit()
