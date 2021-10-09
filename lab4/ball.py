@@ -90,6 +90,11 @@ def ball_motion(balls, BALLS_AMOUNT, screensize=[]):
     return balls
 
 def aim_drower(balls):
+    '''
+    отрисовывпем шарики
+    :param balls: двумерный массив с параметрами шариков, которые нужно отрисовать [5] - цвет, [0] - координата центра
+    по x, [1] - по y, [4] - радиус
+    '''
     for ball in balls:
         circle(screen, ball[5], (ball[0], ball[1]), ball[4])
 
