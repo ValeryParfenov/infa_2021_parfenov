@@ -10,7 +10,7 @@ screen_width, screen_height = screen_size = (700, 700)  # параметры р�
 screen = pygame.display.set_mode(screen_size)
 BALL_RADIUS_RANGE = [10, 50]  # минимальный и максимальный размеры шарика
 font1 = pygame.font.Font(None, 40)  # шрифт для счётчика
-BALL_LIFE_TIME = 30  # время жизни шарика в фреймах
+BALL_LIFE_TIME = 60  # время жизни шарика в фреймах
 
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
@@ -69,6 +69,8 @@ while not finished:
         elif event.type == pygame.MOUSEBUTTONDOWN:  # обработка нажатия мыши
             if (click_check_slot(ball_x, ball_y, ball_radius, event.button, event.pos) == 1):
                 counter += 1
+                ball = ball_create(BALL_RADIUS_RANGE, screen_size)
+                local_time = 0
                 break
     if (local_time == BALL_LIFE_TIME):
         ball = ball_create(BALL_RADIUS_RANGE, screen_size)  # создаём шарик
