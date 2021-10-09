@@ -89,13 +89,17 @@ def ball_motion(balls, BALLS_AMOUNT, screensize=[]):
         balls[i][4] = r
     return balls
 
+def aim_drower(balls):
+    for ball in balls:
+        circle(screen, ball[5], (ball[0], ball[1]), ball[4])
+
 
 screen.fill(WHITE)
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False  # флажок, показывающий, не произошёл ли QUIT
 
-balls = [[] * 7] * BALLS_AMOUNT
+balls = [[] * 7] * BALLS_AMOUNT # создаём начальную систему шариков
 for i in range(0, BALLS_AMOUNT):
     balls[i] = ball_create(BALL_RADIUS_RANGE, SCREEN_SIZE, BALL_VELOCITY_RANGE)
 
@@ -111,8 +115,7 @@ while not finished: # главный цикл
                 counter += 1
                 balls[ball_id] = ball_create(BALL_RADIUS_RANGE, SCREEN_SIZE, BALL_VELOCITY_RANGE)
     balls = ball_motion(balls, BALLS_AMOUNT, SCREEN_SIZE)
-    for i in range(0, BALLS_AMOUNT): # отрисовываем шарики
-        circle(screen, balls[i][5], (balls[i][0], balls[i][1]), balls[i][4])
+    aim_drower(balls)
     text1 = FONT1.render(str(counter), False, (0, 0, 0))  # задаём счётчик
     screen.blit(text1, (10, 10))  # отображаем счётчик
     pygame.display.update()
