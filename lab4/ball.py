@@ -47,39 +47,46 @@ def ball_create(BALL_RADIUS_RANGE=[], SCREEN_SIZE=(), BALL_VELOCITY_RANGE=[]):
 
 def click_check_slot(balls, BALLS_AMOUNT, mouse_button, mouse_coords=()):
     '''
-    функция проверяет, попал ли пользователь в шарик. Если попал - возвращается 1, иначе - 0
-    :param ball_x: - координата шарика х
-    :param ball_y: - координата шарика у
-    :param ball_r: - радиус шарика
+    функция проверяет, попал ли пользователь в шарик. Если попал - возвращается номер шарика,
+    в который попал пльзователь, иначе - -1
+    :param balls: - двумерный массив с параметрами шариков
+    :param BALLS_AMOUNT: - количество шариков
     :param mouse_coords: - координаты нажатия
     :param mouse_button: - номер нажатой кнопки
     '''
     for i in range(0, BALLS_AMOUNT):
         distance = int(((balls[i][0] - mouse_coords[0]) ** 2 + (balls[i][1] - mouse_coords[1]) ** 2) ** 0.5)
-        if (balls[i][4] >= distance):
+        if (balls[i][4] >= distance): # balls[i][4] - радиус i шарика
             return i
     return -1
 
 
 def ball_motion(balls, BALLS_AMOUNT, screensize=[]):
     '''
-    функция отвечает за движение шарика, аргумент - начальное состояние, возвращает коекчное
-    balls[0] - координата шарика по x
-    balls[1] - координата y
-    balls[2] - скорость по x
-    balls[3] - скорость по y
+    функция отвечает за движение шарика, аргумент balls - двумерный массив с началньным
+    состоянием шариков, возвращает конечное
     '''
-    for i in range(0, BALLS_AMOUNT):
-        if (balls[i][0] < balls[i][4] - balls[i][2]):  # здесь реализуется случайное отражение от стен
-            balls[i][2] = randint(BALL_VELOCITY_RANGE[0], BALL_VELOCITY_RANGE[1])
-        elif (screensize[0] - balls[i][0] - balls[i][2] < balls[i][4]):
-            balls[i][2] = -1 * randint(BALL_VELOCITY_RANGE[0], BALL_VELOCITY_RANGE[1])
-        if (balls[i][1] < balls[i][4] - balls[i][3]):
-            balls[i][3] = randint(BALL_VELOCITY_RANGE[0], BALL_VELOCITY_RANGE[1])
-        elif (screensize[1] - balls[i][1] - balls[i][3] < balls[i][4]):
-            balls[i][3] = -1 * randint(BALL_VELOCITY_RANGE[0], BALL_VELOCITY_RANGE[1])
-        balls[i][0] += balls[i][2]  # осуществляется перемещение шарика
-        balls[i][1] += balls[i][3]
+    for i in range(0, BALLS_AMOUNT): # для каждого шарика осуществим эволюцию параметров
+        x = balls[i][0]  # переобозначим параметры шарика
+        y = balls[i][1]
+        v_x = balls[i][2]
+        v_y = balls[i][3]
+        r = balls[i][4]
+        if (x < r - v_x):  # здесь реализуется случайное отражение от стен
+            v_x = randint(BALL_VELOCITY_RANGE[0], BALL_VELOCITY_RANGE[1])
+        elif (screensize[0] - x - v_x < r):
+            v_x = -1 * randint(BALL_VELOCITY_RANGE[0], BALL_VELOCITY_RANGE[1])
+        if (y < r - v_y):
+            v_y = randint(BALL_VELOCITY_RANGE[0], BALL_VELOCITY_RANGE[1])
+        elif (screensize[1] - y - v_y < r):
+            v_y = -1 * randint(BALL_VELOCITY_RANGE[0], BALL_VELOCITY_RANGE[1])
+        x += v_x  # осуществляется перемещение шарика
+        y += v_y
+        balls[i][0] = x
+        balls[i][1] = y
+        balls[i][2] = v_x
+        balls[i][3] = v_y
+        balls[i][4] = r
     return balls
 
 
