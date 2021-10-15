@@ -4,12 +4,14 @@
 
 from random import randint
 
-global BALL_RADIUS_RANGE, BALL_VELOCITY_RANGE, BALLS_AMOUNT, COLORS, MODEL_SIZE, counter, dT
+# задание констант и переменных
+global BALL_RADIUS_RANGE, BALL_VELOCITY_RANGE, BALLS_AMOUNT, COLORS, MODEL_SIZE, counter, dT, BALLS_PARAMAMOUNT
 BALL_RADIUS_RANGE = [40, 70]  # минимальный и максимальный размеры шарика
 BALL_VELOCITY_RANGE = [30, 200]  # минимальная и максимальная скорость шарика
 BALLS_AMOUNT = 6  # количество шариков
 MODEL_SIZE = (1000, 1000)  # размеры модели
 dT = 0.01
+BALLS_PARAMAMOUNT = 7 # количетво параметров, которым обладает каждый шарик
 
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
@@ -28,8 +30,10 @@ def ball_create():
     создаёт параметры шарика и возврашает их массивом, последний параметр массива - указания типа шарика,
     все шарики создаваемые этой функцией нулевого типа
     BALL_RADIUS_RANGE = [] [min_ball_radius, max_ball_radius]
-    MODEL_SIZE размер экрана
-    BALL_VELOCITY_RANGE - диапозон скоростей скоростей шарика по оси (в пикселях/ фрейм)
+    MODEL_SIZE размер области движения шарика
+    BALL_VELOCITY_RANGE - диапозон скоростей шарика по оси (в пикселях/ фрейм)
+
+    шарик случайного цвета из списка создаётся в случайном месте на поле, со скоростью из диапозона
     '''
     ball_radius = randint(BALL_RADIUS_RANGE[0], BALL_RADIUS_RANGE[1])
     ball_x = randint(ball_radius, MODEL_SIZE[0] - ball_radius)
@@ -42,8 +46,11 @@ def ball_create():
 
 
 def model_init():
+    '''
+    иниуиализация модели: создание двумерного массива с параметрами шариков
+    '''
     global balls
-    balls = [[] * 7] * BALLS_AMOUNT  # создаём начальную систему шариков
+    balls = [[] * BALLS_PARAMAMOUNT] * BALLS_AMOUNT  # создаём начальную систему шариков
     for i in range(0, BALLS_AMOUNT):
         balls[i] = ball_create()
 
@@ -51,6 +58,8 @@ def model_init():
 def ball_motion():
     '''
     функция отвечает за движение шарика
+    при соприкасновении скорость по соответствующей оси меняется на случайную скорость
+    из диапозона, направленную от границы соприкасновения
     '''
     for i in range(0, BALLS_AMOUNT):  # для каждого шарика осуществим эволюцию параметров
         x = balls[i][0]  # переобозначим параметры шарика
@@ -58,13 +67,14 @@ def ball_motion():
         v_x = balls[i][2]
         v_y = balls[i][3]
         r = balls[i][4]
-        if (x < r - v_x * dT):  # здесь реализуется случайное отражение от стен
+        # здесь реализуется случайное отражение от стен
+        if (x < r - v_x * dT):  # проверка на соприкасновение с левой границей области
             v_x = randint(BALL_VELOCITY_RANGE[0], BALL_VELOCITY_RANGE[1])
-        elif (MODEL_SIZE[0] - x - v_x * dT < r):
+        elif (MODEL_SIZE[0] - x - v_x * dT < r): # проверка на соприкасновение с правой границей области
             v_x = -1 * randint(BALL_VELOCITY_RANGE[0], BALL_VELOCITY_RANGE[1])
-        if (y < r - v_y * dT):
+        if (y < r - v_y * dT): # проверка на соприкасновение с верхней границей области
             v_y = randint(BALL_VELOCITY_RANGE[0], BALL_VELOCITY_RANGE[1])
-        elif (MODEL_SIZE[1] - y - v_y * dT < r):
+        elif (MODEL_SIZE[1] - y - v_y * dT < r): # проверка на соприкасновение с нижней границей области
             v_y = -1 * randint(BALL_VELOCITY_RANGE[0], BALL_VELOCITY_RANGE[1])
         x += v_x * dT  # осуществляется перемещение шарика
         y += v_y * dT
@@ -78,16 +88,16 @@ def ball_motion():
 
 def click_check_slot(mouse_button, click_coords=()):
     '''
-    функция проверяет, попал ли пользователь в шарик. Если попал - возвращается номер шарика,
-    в который попал пльзователь, иначе - -1
-    :param balls: - двумерный массив с параметрами шариков
-    :param BALLS_AMOUNT: - количество шариков
+    функция проверяет, попал ли пользователь в шарик и увеичивает очки в случае попадания
+    balls - двумерный массив с параметрами шариков
+    BALLS_AMOUNT - количество шариков
     :param click_coords: - координаты нажатия
     :param mouse_button: - номер нажатой кнопки
     '''
     global counter
     aimed_ball = -1
     for i in range(0, BALLS_AMOUNT):
+        # по теореме поифагора вычислим расстояние от клика до центра шарика и сравним с радиусом
         distance = int(((balls[i][0] - click_coords[0]) ** 2 + (balls[i][1] - click_coords[1]) ** 2) ** 0.5)
         if (balls[i][4] >= distance):  # balls[i][4] - радиус i шарика
             aimed_ball = i
