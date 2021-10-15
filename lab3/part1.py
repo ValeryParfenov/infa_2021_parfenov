@@ -45,7 +45,7 @@ ellipse(screen, black, (60, 320, 290, 145), 1)
 ellipse(screen, cat_body_color, (66, 428, 70, 38))  # левая нижняя лапка
 ellipse(screen, black, (66, 428, 70, 38), 1)
 
-circle(screen, cat_body_color, (325, 420), 39)  # Лвая лапка
+circle(screen, cat_body_color, (325, 420), 39)  # правая лапка
 circle(screen, black, (325, 420), 39, 1)
 ellipse(screen, cat_body_color, (342, 431, 30, 62))
 ellipse(screen, black, (342, 431, 30, 62), 1)
