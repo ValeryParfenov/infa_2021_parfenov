@@ -20,6 +20,7 @@ WHITE = (255, 255, 255)
 view_scale_coefficient = SCREEN_SIZE[0] / model.MODEL_SIZE[0]
 time_scale = 10
 
+
 def aim_drower(balls, view_scale_coefficient):
     '''
     отрисовывпем шарики

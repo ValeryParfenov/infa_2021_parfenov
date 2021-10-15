@@ -58,13 +58,13 @@ def ball_motion():
         v_x = balls[i][2]
         v_y = balls[i][3]
         r = balls[i][4]
-        if (x < r - v_x):  # здесь реализуется случайное отражение от стен
+        if (x < r - v_x * dT):  # здесь реализуется случайное отражение от стен
             v_x = randint(BALL_VELOCITY_RANGE[0], BALL_VELOCITY_RANGE[1])
-        elif (MODEL_SIZE[0] - x - v_x < r):
+        elif (MODEL_SIZE[0] - x - v_x * dT < r):
             v_x = -1 * randint(BALL_VELOCITY_RANGE[0], BALL_VELOCITY_RANGE[1])
-        if (y < r - v_y):
+        if (y < r - v_y * dT):
             v_y = randint(BALL_VELOCITY_RANGE[0], BALL_VELOCITY_RANGE[1])
-        elif (MODEL_SIZE[1] - y - v_y < r):
+        elif (MODEL_SIZE[1] - y - v_y * dT < r):
             v_y = -1 * randint(BALL_VELOCITY_RANGE[0], BALL_VELOCITY_RANGE[1])
         x += v_x * dT  # осуществляется перемещение шарика
         y += v_y * dT
