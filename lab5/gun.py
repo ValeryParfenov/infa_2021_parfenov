@@ -122,16 +122,23 @@ class Gun:
 class Target:
     # self.points = 0
     # self.live = 1
-    # FIXME: don't work!!! How to call this functions when object is created?
+    # FIXIT don't work!!! How to call this functions when object is created?
     # self.new_target()
-
-    def new_target(self, screen: pygame.Surface):
-        """ Инициализация новой цели. """
+    def __init__(self,  screen: pygame.Surface):
         self.x = rnd.randint(600, 780)
         self.y = rnd.randint(300, 550)
         self.r = rnd.randint(2, 50)
         self.color = RED
         self.screen = screen
+        self.live = 1
+        self.points = 0
+
+    def new_target(self):
+        """ Инициализация новой цели. """
+        self.x = rnd.randint(600, 780)
+        self.y = rnd.randint(300, 550)
+        self.r = rnd.randint(2, 50)
+        self.color = RED
 
     def hit(self, points=1):
         """Попадание шарика в цель."""
@@ -148,10 +155,7 @@ balls = []
 
 clock = pygame.time.Clock()
 gun = Gun(screen)
-target = Target()
-print(type(target))
-target.new_target(screen)
-print(type(target))
+target = Target(screen)
 finished = False
 
 while not finished:
