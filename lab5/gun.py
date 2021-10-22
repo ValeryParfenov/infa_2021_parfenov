@@ -3,6 +3,7 @@ import random as rnd
 from random import choice
 
 import pygame
+pygame.init()
 
 FPS = 30
 MAX_BALL_LIVES = 80
@@ -17,6 +18,7 @@ BLACK = (0, 0, 0)
 WHITE = 0xFFFFFF
 GREY = 0x7D7D7D
 GAME_COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
+FONT1 = pygame.font.Font(None, 40)
 
 G = 2
 WIDTH = 800
@@ -176,6 +178,8 @@ finished = False
 
 while not finished:
     screen.fill(WHITE)
+    text1 = FONT1.render(str(target.points), False, (0, 0, 0))  # задаём счётчик
+    screen.blit(text1, (10, 10))  # отображаем счётчик
     gun.draw()
     target.draw()
     for b in balls:
