@@ -48,7 +48,6 @@ class Ball:
         self.x и self.y с учетом скоростей self.vx и self.vy, силы гравитации, действующей на мяч,
         и стен по краям окна (размер окна 800х600).
         """
-        # FIXME
 
         if (self.x <= self.r):  # отражение от стен
             self.x = self.r
@@ -84,9 +83,7 @@ class Ball:
             Возвращает True в случае столкновения мяча и цели. В противном случае возвращает False.
         """
         distance = ((self.x - obj.x) ** 2 + (self.y - obj.y) ** 2) ** 0.5
-        if(distance <= self.r + obj.r):
-            return True
-        return False
+        return (distance <= self.r + obj.r)
 
 
 class Gun:
@@ -120,14 +117,17 @@ class Gun:
     def targetting(self, event):
         """Прицеливание. Зависит от положения мыши."""
         if event:
-            self.an = math.atan((event.pos[1] - 450) / (event.pos[0] - 20))
+            if((event.pos[0] - 20) != 0):
+                self.an = math.atan((event.pos[1] - 450) / (event.pos[0] - 20))
+            else: self.an = -1 * math.pi / 2
         if self.f2_on:
             self.color = RED
         else:
             self.color = GREY
 
     def draw(self):
-        pass
+        pygame.draw.line(screen, self.color, (40, 450), (40 + (20 + self.f2_power) * math.cos(self.an),
+                                                         450 + (20 + self.f2_power) * math.sin(self.an)), 5)
         # FIXIT don't know how to do it
 
     def power_up(self):
@@ -140,10 +140,6 @@ class Gun:
 
 
 class Target:
-    # self.points = 0
-    # self.live = 1
-    # FIXIT don't work!!! How to call this functions when object is created?
-    # self.new_target()
     def __init__(self, screen: pygame.Surface):
         self.x = rnd.randint(600, 780)
         self.y = rnd.randint(300, 550)
