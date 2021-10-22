@@ -5,6 +5,7 @@ from random import choice
 import pygame
 
 FPS = 30
+MAX_BALL_LIVES = 80
 
 RED = 0xFF0000
 BLUE = 0x0000FF
@@ -17,12 +18,13 @@ WHITE = 0xFFFFFF
 GREY = 0x7D7D7D
 GAME_COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 
+G = 2
 WIDTH = 800
 HEIGHT = 600
 
 
 class Ball:
-    def __init__(self, screen: pygame.Surface, x=40, y=450):
+    def __init__(self, G, MAX_BALL_LIVES, screen: pygame.Surface, x=40, y=450):
         """ Конструктор класса ball
 
         Args:
@@ -36,7 +38,8 @@ class Ball:
         self.vx = 0
         self.vy = 0
         self.color = choice(GAME_COLORS)
-        self.live = 30
+        self.live = MAX_BALL_LIVES
+        self.G = G
 
     def move(self):
         """Переместить мяч по прошествии единицы времени.
@@ -46,8 +49,23 @@ class Ball:
         и стен по краям окна (размер окна 800х600).
         """
         # FIXME
+
+        if (self.x <= self.r):  # отражение от стен
+            self.x = self.r
+            self.vx = int(-0.9 * self.vx)
+        elif (self.x >= WIDTH - self.r):
+            self.vx = int(-0.9 * self.vx)
+            self.x = WIDTH - self.r
+        if (self.y <= self.r):
+            self.y = self.r
+            self.vy = int(-0.9 * self.vy)
+        elif (self.y >= HEIGHT - self.r):
+            self.vy = int(-0.9 * self.vy)
+            self.y = HEIGHT - self.r
         self.x += self.vx
-        self.y -= self.vy
+        self.y -= self.vy - (self.G) / 2
+        self.vy -= self.G
+        self.live -= 1
 
     def draw(self):
         pygame.draw.circle(
@@ -88,7 +106,7 @@ class Gun:
         """
         global balls, bullet
         bullet += 1
-        new_ball = Ball(self.screen)
+        new_ball = Ball(G, MAX_BALL_LIVES, self.screen)
         new_ball.r += 5
         self.an = math.atan2((event.pos[1] - new_ball.y), (event.pos[0] - new_ball.x))
         new_ball.vx = self.f2_power * math.cos(self.an)
@@ -124,7 +142,7 @@ class Target:
     # self.live = 1
     # FIXIT don't work!!! How to call this functions when object is created?
     # self.new_target()
-    def __init__(self,  screen: pygame.Surface):
+    def __init__(self, screen: pygame.Surface):
         self.x = rnd.randint(600, 780)
         self.y = rnd.randint(300, 550)
         self.r = rnd.randint(2, 50)
@@ -164,6 +182,8 @@ while not finished:
     target.draw()
     for b in balls:
         b.draw()
+        if (b.live <= 0):
+            balls.remove(b)
     pygame.display.update()
 
     clock.tick(FPS)
