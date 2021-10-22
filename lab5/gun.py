@@ -5,8 +5,6 @@ from random import choice
 import pygame
 
 pygame.init()
-FPS = 30
-MAX_BALL_LIVES = 80
 
 RED = 0xFF0000
 BLUE = 0x0000FF
@@ -18,19 +16,19 @@ BLACK = (0, 0, 0)
 WHITE = 0xFFFFFF
 GREY = 0x7D7D7D
 GAME_COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
-FONT1 = pygame.font.Font(None, 40)
-TARGET_VELOCITY_RANGE = [5,30]
 
-G = 2
-WIDTH = 800
+FONT_FOR_COUNTER = pygame.font.Font(None, 40) 
+TARGET_VELOCITY_RANGE = [5,30] # диапозон скоростей мишени
+FPS = 30
+MAX_BALL_LIVES = 80 # время жизни снаряда в кадрах
+G = 2 # аналог ускорения свободного падения
+WIDTH = 800 # параметры экрана
 HEIGHT = 600
 
 
 class Ball:
     def __init__(self, G, MAX_BALL_LIVES, screen: pygame.Surface, x=40, y=450):
         """ Конструктор класса ball
-
-        Args:
         x - начальное положение мяча по горизонтали
         y - начальное положение мяча по вертикали
         """
@@ -45,8 +43,7 @@ class Ball:
         self.G = G
 
     def move(self):
-        """Переместить мяч по прошествии единицы времени.
-
+        """
         Метод описывает перемещение мяча за один кадр перерисовки. То есть, обновляет значения
         self.x и self.y с учетом скоростей self.vx и self.vy, силы гравитации, действующей на мяч,
         и стен по краям окна (размер окна 800х600).
@@ -64,10 +61,12 @@ class Ball:
         elif (self.y >= HEIGHT - self.r):
             self.vy = int(-0.9 * self.vy)
             self.y = HEIGHT - self.r
-        self.x += self.vx
+
+        self.x += self.vx # эволюция параметров
         self.y -= self.vy - (self.G) / 2
         self.vy -= self.G
-        self.live -= 1
+
+        self.live -= 1 # снаряд постарел на 1 кадр
 
     def draw(self):
         pygame.draw.circle(
@@ -79,7 +78,6 @@ class Ball:
 
     def hittest(self, obj):
         """Функция проверяет сталкивалкивается ли данный обьект с целью, описываемой в обьекте obj.
-
         Args:
             obj: Обьект, с которым проверяется столкновение.
         Returns:
@@ -91,6 +89,8 @@ class Ball:
 
 class Gun:
     def __init__(self, screen):
+        '''Конструктор класса Gun
+        '''
         self.screen = screen
         self.f2_power = 10
         self.f2_on = 0
@@ -131,7 +131,6 @@ class Gun:
     def draw(self):
         pygame.draw.line(screen, self.color, (40, 450), (40 + (20 + self.f2_power) * math.cos(self.an),
                                                          450 + (20 + self.f2_power) * math.sin(self.an)), 5)
-        # FIXIT don't know how to do it
 
     def power_up(self):
         if self.f2_on:
@@ -144,13 +143,18 @@ class Gun:
 
 class Target:
     def __init__(self, screen: pygame.Surface, TARGET_VELOCITY_RANGE = []):
+        '''Конструктор класса Target
+
+        :param screen: экран
+        :param TARGET_VELOCITY_RANGE: диапозон скоростей мишени
+        '''
         self.x = rnd.randint(600, 780)
         self.y = rnd.randint(300, 550)
         self.r = rnd.randint(2, 50)
         self.color = RED
         self.screen = screen
         self.live = 1
-        self.points = 0
+        self.points = 0 # количество очков, набранное игроком
         self.vx = random.randint(TARGET_VELOCITY_RANGE[0], TARGET_VELOCITY_RANGE[1])
         self.vy = random.randint(TARGET_VELOCITY_RANGE[0], TARGET_VELOCITY_RANGE[1])
 
@@ -190,47 +194,52 @@ class Target:
         elif (self.y >= HEIGHT - self.r):
             self.vy = int(-0.9 * self.vy)
             self.y = HEIGHT - self.r
-        self.x += self.vx
+
+        self.x += self.vx # эволюция параметров
         self.y -= self.vy
 
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 bullet = 0
-balls = []
+balls = [] # здесь будут храниться экземпляры класса Ball
 
 clock = pygame.time.Clock()
-gun = Gun(screen)
-target = Target(screen, TARGET_VELOCITY_RANGE)
-finished = False
+gun = Gun(screen) # конструируем пушку
+target = Target(screen, TARGET_VELOCITY_RANGE) # конструируем первую цель
+finished = False # флажок, показывающий, что пора выходить из цикла
 
 while not finished:
     screen.fill(WHITE)
-    text1 = FONT1.render(str(target.points), False, (0, 0, 0))  # задаём счётчик
+    text1 = FONT_FOR_COUNTER.render(str(target.points), False, (0, 0, 0))  # задаём счётчик
     screen.blit(text1, (10, 10))  # отображаем счётчик
+    # далее отрисовка объектов
     gun.draw()
     target.draw()
     for b in balls:
         b.draw()
         if (b.live <= 0):
             balls.remove(b)
+
     pygame.display.update()
 
     clock.tick(FPS)
+    # обрабатываем события
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        if event.type == pygame.QUIT: # проверка на выход
             finished = True
-        elif event.type == pygame.MOUSEBUTTONDOWN:
+        elif event.type == pygame.MOUSEBUTTONDOWN: # нажатие на кнопку мыши
             gun.fire2_start(event)
-        elif event.type == pygame.MOUSEBUTTONUP:
+        elif event.type == pygame.MOUSEBUTTONUP: # отпускание кнопки мыши
             gun.fire2_end(event)
-        elif event.type == pygame.MOUSEMOTION:
+        elif event.type == pygame.MOUSEMOTION: # передвижение курсора
             gun.targetting(event)
 
+    # перемещение объектов
     target.move()
     for b in balls:
         b.move()
-        if b.hittest(target):
+        if b.hittest(target): # проверка на попадание снарядом в цель
             target.hit()
             target.new_target(TARGET_VELOCITY_RANGE)
             balls.remove(b)
