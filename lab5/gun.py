@@ -83,7 +83,9 @@ class Ball:
         Returns:
             Возвращает True в случае столкновения мяча и цели. В противном случае возвращает False.
         """
-        # FIXME
+        distance = ((self.x - obj.x) ** 2 + (self.y - obj.y) ** 2) ** 0.5
+        if(distance <= self.r + obj.r):
+            return True
         return False
 
 
@@ -199,10 +201,10 @@ while not finished:
 
     for b in balls:
         b.move()
-        if b.hittest(target) and target.live:
-            target.live = 0
+        if b.hittest(target):
             target.hit()
             target.new_target()
+            balls.remove(b)
     gun.power_up()
 
 pygame.quit()
