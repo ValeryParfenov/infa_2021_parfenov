@@ -69,25 +69,15 @@ class Bullet:
             self.screen, self.color,
             (self.x, self.y), self.r)
 
-    def hittest(self, obj):
-        """Функция проверяет сталкивалкивается ли данный обьект с целью, описываемой в обьекте obj.
-        Args:
-            obj: Обьект, с которым проверяется столкновение.
-        Returns:
-            Возвращает True в случае столкновения мяча и цели. В противном случае возвращает False.
-        """
-        distance = ((self.x - obj.x) ** 2 + (self.y - obj.y) ** 2) ** 0.5
-        return (distance <= self.r + obj.r)
-
 
 class Gun:
     def __init__(self, screen):
         '''Конструктор класса Gun
         '''
         self.screen = screen
-        self.fire_power = 10 # мощность выстрела
-        self.is_targetting = 0 # флажок, показывающий, началось ли прицеливание
-        self.angle = 1 # угол с горизонтом под которым находится дуло пушки
+        self.fire_power = 10  # мощность выстрела
+        self.is_targetting = 0  # флажок, показывающий, началось ли прицеливание
+        self.angle = 1  # угол с горизонтом под которым находится дуло пушки
         self.color = GREY
 
     def fire2_start(self):
@@ -194,6 +184,13 @@ class Game_manager():
         self.finished = False  # флажок, показывающий, что пора выходить из цикла
         self.scores = 0
 
+    def hittest_bullet_target(self):
+        for bullet in self.bullets:
+            distance = ((bullet.x - self.target.x) ** 2 + (bullet.y - self.target.y) ** 2) ** 0.5
+            if (distance <= self.target.r + bullet.r):
+                return True
+        return False
+
     def mainloop(self):
         while not self.finished:
             self.screen.fill(WHITE)
@@ -215,7 +212,7 @@ class Game_manager():
                 if event.type == pygame.QUIT:  # проверка на выход
                     self.finished = True
                 elif event.type == pygame.MOUSEBUTTONDOWN:  # нажатие на кнопку мыши
-                    if(event.button == 1):
+                    if (event.button == 1):
                         self.gun.fire2_start()
                 elif event.type == pygame.MOUSEBUTTONUP:  # отпускание кнопки мыши
                     if (event.button == 1):
@@ -227,10 +224,10 @@ class Game_manager():
             self.target.move()
             for b in self.bullets:
                 b.move()
-                if b.hittest(self.target):  # проверка на попадание снарядом в цель
-                    self.scores += TARGET_SCORES
-                    self.target.new_target(TARGET_VELOCITY_RANGE)
-                    self.bullets.remove(b)
+            if self.hittest_bullet_target():  # проверка на попадание снарядом в цель
+                self.scores += TARGET_SCORES
+                self.target.new_target(TARGET_VELOCITY_RANGE)
+                self.bullets.remove(b)
             self.gun.power_up()
         pygame.quit()
 
