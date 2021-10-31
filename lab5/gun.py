@@ -91,30 +91,29 @@ class Gun:
         self.an = 1
         self.color = GREY
 
-    def fire2_start(self, event):
+    def fire2_start(self):
         self.f2_on = 1
 
-    def fire2_end(self, event):
+    def fire2_end(self, mouseposision=[]):
         """Выстрел мячом.
 
         Происходит при отпускании кнопки мыши.
         Начальные значения компонент скорости мяча vx и vy зависят от положения мыши.
         """
         new_ball = Bullet(G, MAX_BALL_LIVES, self.screen)
-        self.an = math.atan2((event.pos[1] - new_ball.y), (event.pos[0] - new_ball.x))
+        self.an = math.atan2((mouseposision[1] - new_ball.y), (mouseposision[0] - new_ball.x))
         new_ball.vx = self.f2_power * math.cos(self.an)
         new_ball.vy = - self.f2_power * math.sin(self.an)
         self.f2_on = 0
         self.f2_power = 10
         return new_ball
 
-    def targetting(self, event):
+    def targetting(self, mouseposision=[]):
         """Прицеливание. Зависит от положения мыши."""
-        if event:
-            if ((event.pos[0] - 20) != 0):
-                self.an = math.atan((event.pos[1] - 450) / (event.pos[0] - 20))
-            else:
-                self.an = -1 * math.pi / 2
+        if ((mouseposision[0] - 20) != 0):
+            self.an = math.atan((mouseposision[1] - 450) / (mouseposision[0] - 20))
+        else:
+            self.an = -1 * math.pi / 2
         if self.f2_on:
             self.color = RED
         else:
@@ -219,11 +218,11 @@ class Game_manager():
                 if event.type == pygame.QUIT:  # проверка на выход
                     self.finished = True
                 elif event.type == pygame.MOUSEBUTTONDOWN:  # нажатие на кнопку мыши
-                    self.gun.fire2_start(event)
+                    self.gun.fire2_start()
                 elif event.type == pygame.MOUSEBUTTONUP:  # отпускание кнопки мыши
-                    self.bullets.append(self.gun.fire2_end(event))
+                    self.bullets.append(self.gun.fire2_end((event.pos[0], event.pos[1])))
                 elif event.type == pygame.MOUSEMOTION:  # передвижение курсора
-                    self.gun.targetting(event)
+                    self.gun.targetting((event.pos[0], event.pos[1]))
 
             # перемещение объектов
             self.target.move()
