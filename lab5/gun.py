@@ -215,9 +215,11 @@ class Game_manager():
                 if event.type == pygame.QUIT:  # проверка на выход
                     self.finished = True
                 elif event.type == pygame.MOUSEBUTTONDOWN:  # нажатие на кнопку мыши
-                    self.gun.fire2_start()
+                    if(event.button == 1):
+                        self.gun.fire2_start()
                 elif event.type == pygame.MOUSEBUTTONUP:  # отпускание кнопки мыши
-                    self.bullets.append(self.gun.fire2_end((event.pos[0], event.pos[1])))
+                    if (event.button == 1):
+                        self.bullets.append(self.gun.fire2_end((event.pos[0], event.pos[1])))
                 elif event.type == pygame.MOUSEMOTION:  # передвижение курсора
                     self.gun.targetting((event.pos[0], event.pos[1]))
 
