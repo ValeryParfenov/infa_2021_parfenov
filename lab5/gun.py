@@ -123,8 +123,8 @@ class Gun:
         else:
             self.color = GREY
 
-    def draw(self, screen):
-        pygame.draw.line(screen, self.color, (40, 450), (40 + (20 + self.f2_power) * math.cos(self.an),
+    def draw(self):
+        pygame.draw.line(self.screen, self.color, (40, 450), (40 + (20 + self.f2_power) * math.cos(self.an),
                                                          450 + (20 + self.f2_power) * math.sin(self.an)), 5)
 
     def power_up(self):
@@ -193,55 +193,58 @@ class Target:
         self.y -= self.vy
 
 
-def main():
-    global bullet, bullets
-    pygame.init()
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    FONT_FOR_COUNTER = pygame.font.Font(None, 40)
-    bullet = 0
-    bullets = []  # здесь будут храниться экземпляры класса Bullet
+class Game_manager():
+    def __init__(self):
+        global bullet, bullets
+        pygame.init()
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        self.FONT_FOR_COUNTER = pygame.font.Font(None, 40)
+        bullet = 0
+        bullets = []  # здесь будут храниться экземпляры класса Bullet
 
-    clock = pygame.time.Clock()
-    gun = Gun(screen)  # конструируем пушку
-    target = Target(screen, TARGET_VELOCITY_RANGE)  # конструируем первую цель
-    finished = False  # флажок, показывающий, что пора выходить из цикла
+        self.clock = pygame.time.Clock()
+        self.gun = Gun(self.screen)  # конструируем пушку
+        self.target = Target(self.screen, TARGET_VELOCITY_RANGE)  # конструируем первую цель
+        self.finished = False  # флажок, показывающий, что пора выходить из цикла
 
-    while not finished:
-        screen.fill(WHITE)
-        text1 = FONT_FOR_COUNTER.render(str(target.points), False, (0, 0, 0))  # задаём счётчик
-        screen.blit(text1, (10, 10))  # отображаем счётчик
-        # далее отрисовка объектов
-        gun.draw(screen)
-        target.draw()
-        for b in bullets:
-            b.draw()
-            if (b.live <= 0):
-                bullets.remove(b)
+    def mainloop(self):
+        while not self.finished:
+            self.screen.fill(WHITE)
+            text1 = self.FONT_FOR_COUNTER.render(str(self.target.points), False, (0, 0, 0))  # задаём счётчик
+            self.screen.blit(text1, (10, 10))  # отображаем счётчик
+            # далее отрисовка объектов
+            self.gun.draw()
+            self.target.draw()
+            for b in bullets:
+                b.draw()
+                if (b.live <= 0):
+                    bullets.remove(b)
 
-        pygame.display.update()
+            pygame.display.update()
 
-        clock.tick(FPS)
-        # обрабатываем события
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:  # проверка на выход
-                finished = True
-            elif event.type == pygame.MOUSEBUTTONDOWN:  # нажатие на кнопку мыши
-                gun.fire2_start(event)
-            elif event.type == pygame.MOUSEBUTTONUP:  # отпускание кнопки мыши
-                gun.fire2_end(event)
-            elif event.type == pygame.MOUSEMOTION:  # передвижение курсора
-                gun.targetting(event)
+            self.clock.tick(FPS)
+            # обрабатываем события
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:  # проверка на выход
+                    self.finished = True
+                elif event.type == pygame.MOUSEBUTTONDOWN:  # нажатие на кнопку мыши
+                    self.gun.fire2_start(event)
+                elif event.type == pygame.MOUSEBUTTONUP:  # отпускание кнопки мыши
+                    self.gun.fire2_end(event)
+                elif event.type == pygame.MOUSEMOTION:  # передвижение курсора
+                    self.gun.targetting(event)
 
-        # перемещение объектов
-        target.move()
-        for b in bullets:
-            b.move()
-            if b.hittest(target):  # проверка на попадание снарядом в цель
-                target.hit()
-                target.new_target(TARGET_VELOCITY_RANGE)
-                bullets.remove(b)
-        gun.power_up()
-    pygame.quit()
+            # перемещение объектов
+            self.target.move()
+            for b in bullets:
+                b.move()
+                if b.hittest(self.target):  # проверка на попадание снарядом в цель
+                    self.target.hit()
+                    self.target.new_target(TARGET_VELOCITY_RANGE)
+                    bullets.remove(b)
+            self.gun.power_up()
+        pygame.quit()
 
-if __name__ == "__main__":
-    main()
+
+game = Game_manager()
+game.mainloop()
