@@ -33,7 +33,7 @@ class Bullet:
         self.screen = screen
         self.x = x
         self.y = y
-        self.r = 10
+        self.r = 15
         self.vx = 0
         self.vy = 0
         self.color = choice(GAME_COLORS)
@@ -100,16 +100,13 @@ class Gun:
         Происходит при отпускании кнопки мыши.
         Начальные значения компонент скорости мяча vx и vy зависят от положения мыши.
         """
-        global bullets, bullet
-        bullet += 1
         new_ball = Bullet(G, MAX_BALL_LIVES, self.screen)
-        new_ball.r += 5
         self.an = math.atan2((event.pos[1] - new_ball.y), (event.pos[0] - new_ball.x))
         new_ball.vx = self.f2_power * math.cos(self.an)
         new_ball.vy = - self.f2_power * math.sin(self.an)
-        bullets.append(new_ball)
         self.f2_on = 0
         self.f2_power = 10
+        return new_ball
 
     def targetting(self, event):
         """Прицеливание. Зависит от положения мыши."""
@@ -190,12 +187,10 @@ class Target:
 
 class Game_manager():
     def __init__(self):
-        global bullet, bullets
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         self.FONT_FOR_COUNTER = pygame.font.Font(None, 40)
-        bullet = 0
-        bullets = []  # здесь будут храниться экземпляры класса Bullet
+        self.bullets = []  # здесь будут храниться экземпляры класса Bullet
 
         self.clock = pygame.time.Clock()
         self.gun = Gun(self.screen)  # конструируем пушку
@@ -211,10 +206,10 @@ class Game_manager():
             # далее отрисовка объектов
             self.gun.draw()
             self.target.draw()
-            for b in bullets:
+            for b in self.bullets:
                 b.draw()
                 if (b.live <= 0):
-                    bullets.remove(b)
+                    self.bullets.remove(b)
 
             pygame.display.update()
 
@@ -226,18 +221,18 @@ class Game_manager():
                 elif event.type == pygame.MOUSEBUTTONDOWN:  # нажатие на кнопку мыши
                     self.gun.fire2_start(event)
                 elif event.type == pygame.MOUSEBUTTONUP:  # отпускание кнопки мыши
-                    self.gun.fire2_end(event)
+                    self.bullets.append(self.gun.fire2_end(event))
                 elif event.type == pygame.MOUSEMOTION:  # передвижение курсора
                     self.gun.targetting(event)
 
             # перемещение объектов
             self.target.move()
-            for b in bullets:
+            for b in self.bullets:
                 b.move()
                 if b.hittest(self.target):  # проверка на попадание снарядом в цель
                     self.scores += TARGET_SCORES
                     self.target.new_target(TARGET_VELOCITY_RANGE)
-                    bullets.remove(b)
+                    self.bullets.remove(b)
             self.gun.power_up()
         pygame.quit()
 
