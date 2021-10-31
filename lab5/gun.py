@@ -17,10 +17,28 @@ GAME_COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 TARGET_SCORES = 1  # Количество очков, даваемое за цель класса Target
 TARGET_VELOCITY_RANGE = [5, 30]  # диапозон скоростей мишени
 FPS = 30
-MAX_BALL_LIVES = 80  # время жизни снаряда в кадрах
+MAX_BULLET_LIVES = 80  # время жизни снаряда в кадрах
+LASER_LIFETIME = 4  # время отображения лазера
 G = 2  # аналог ускорения свободного падения
 WIDTH = 800  # параметры экрана
 HEIGHT = 600
+
+
+class Laser:
+    def __init__(self, screen):
+        '''
+        конструктор класса Laser
+        self.start_coords - координаты начала лазерного луча
+        self.angle - угол, под которым распространяется луч
+        '''
+        self.screen = screen
+        self.start_coords = [0, 0]
+        self.angle = 1
+        self.live = LASER_LIFETIME
+
+    def draw(self):
+        pygame.draw.line(self.screen, RED, self.start_coords,
+                         [WIDTH, self.start_coords[1] + ((WIDTH - self.start_coords[0]) * math.tan(self.angle))], 3)
 
 
 class Bullet:
@@ -80,22 +98,28 @@ class Gun:
         self.angle = 1  # угол с горизонтом под которым находится дуло пушки
         self.color = GREY
 
-    def fire2_start(self):
+    def fire2(self):
+        lasershot = Laser(self.screen)
+        lasershot.angle = self.angle
+        lasershot.start_coords = [40, 450]
+        return lasershot
+
+    def fire1_start(self):
         self.is_targetting = 1
 
-    def fire2_end(self, mouseposision=[]):
+    def fire1_end(self, mouseposision=[]):
         """Выстрел мячом.
 
         Происходит при отпускании кнопки мыши.
         Начальные значения компонент скорости мяча vx и vy зависят от положения мыши.
         """
-        new_ball = Bullet(G, MAX_BALL_LIVES, self.screen)
-        self.angle = math.atan2((mouseposision[1] - new_ball.y), (mouseposision[0] - new_ball.x))
-        new_ball.vx = self.fire_power * math.cos(self.angle)
-        new_ball.vy = - self.fire_power * math.sin(self.angle)
+        new_bullet = Bullet(G, MAX_BULLET_LIVES, self.screen)
+        self.angle = math.atan2((mouseposision[1] - new_bullet.y), (mouseposision[0] - new_bullet.x))
+        new_bullet.vx = self.fire_power * math.cos(self.angle)
+        new_bullet.vy = - self.fire_power * math.sin(self.angle)
         self.is_targetting = 0
         self.fire_power = 10
-        return new_ball
+        return new_bullet
 
     def targetting(self, mouseposision=[]):
         """Прицеливание. Зависит от положения мыши."""
@@ -183,6 +207,8 @@ class Game_manager():
         self.target = Target(self.screen, TARGET_VELOCITY_RANGE)  # конструируем первую цель
         self.finished = False  # флажок, показывающий, что пора выходить из цикла
         self.scores = 0
+        self.lasershot = Laser(self.screen)
+        self.lasershot.live = 0
 
     def hittest_bullet_target(self):
         for bullet in self.bullets:
@@ -199,6 +225,9 @@ class Game_manager():
             # далее отрисовка объектов
             self.gun.draw()
             self.target.draw()
+            if (self.lasershot.live > 0):
+                self.lasershot.draw()
+                self.lasershot.live -= 1
             for b in self.bullets:
                 b.draw()
                 if (b.live <= 0):
@@ -213,10 +242,12 @@ class Game_manager():
                     self.finished = True
                 elif event.type == pygame.MOUSEBUTTONDOWN:  # нажатие на кнопку мыши
                     if (event.button == 1):
-                        self.gun.fire2_start()
+                        self.gun.fire1_start()
+                    elif (event.button == 3):
+                        self.lasershot = self.gun.fire2()
                 elif event.type == pygame.MOUSEBUTTONUP:  # отпускание кнопки мыши
                     if (event.button == 1):
-                        self.bullets.append(self.gun.fire2_end((event.pos[0], event.pos[1])))
+                        self.bullets.append(self.gun.fire1_end((event.pos[0], event.pos[1])))
                 elif event.type == pygame.MOUSEMOTION:  # передвижение курсора
                     self.gun.targetting((event.pos[0], event.pos[1]))
 
