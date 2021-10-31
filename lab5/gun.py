@@ -163,7 +163,7 @@ class Target:
         """ Инициализация новой цели. """
         self.x = rnd.randint(600, 780)
         self.y = rnd.randint(300, 550)
-        self.r = rnd.randint(2, 50)
+        self.r = rnd.randint(15, 50)
         self.color = RED
         self.vx = random.randint(TARGET_VELOCITY_RANGE[0], TARGET_VELOCITY_RANGE[1])
         self.vy = random.randint(TARGET_VELOCITY_RANGE[0], TARGET_VELOCITY_RANGE[1])
@@ -211,11 +211,23 @@ class Game_manager():
         self.lasershot.live = 0
 
     def hittest_bullet_target(self):
+        '''проверяет поражезние цели шариком, перебирая весь массив bullets
+        '''
         for bullet in self.bullets:
             distance = ((bullet.x - self.target.x) ** 2 + (bullet.y - self.target.y) ** 2) ** 0.5
             if (distance <= self.target.r + bullet.r):
                 return True
         return False
+
+    def hittest_laser_target(self):
+        '''
+        проверка на поражение цели лазером
+        '''
+        n = [math.tan(self.lasershot.angle), -1]  # вектор нормали к лазерному лучу
+        # найдём расстояние через скалярное произведение вектора нормали на радиусвектор мишени в СО с началом в пушке
+        distance = abs((n[0] * (self.target.x - self.lasershot.start_coords[0])
+                        + n[1] * (self.target.y - self.lasershot.start_coords[1]))) / ((n[1] ** 2 + n[0] ** 2) ** 0.5)
+        return (distance <= self.target.r)
 
     def mainloop(self):
         while not self.finished:
@@ -255,7 +267,10 @@ class Game_manager():
             self.target.move()
             for b in self.bullets:
                 b.move()
-            if self.hittest_bullet_target():  # проверка на попадание снарядом в цель
+            if (self.hittest_laser_target() and self.lasershot.live > 0):
+                self.scores += TARGET_SCORES
+                self.target.new_target(TARGET_VELOCITY_RANGE)
+            elif self.hittest_bullet_target():
                 self.scores += TARGET_SCORES
                 self.target.new_target(TARGET_VELOCITY_RANGE)
                 self.bullets.remove(b)
