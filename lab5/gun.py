@@ -15,7 +15,6 @@ WHITE = 0xFFFFFF
 GREY = 0x7D7D7D
 GAME_COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 TARGET_SCORES = 1  # Количество очков, даваемое за цель класса Target
-
 TARGET_VELOCITY_RANGE = [5, 30]  # диапозон скоростей мишени
 FPS = 30
 MAX_BALL_LIVES = 80  # время жизни снаряда в кадрах
@@ -26,9 +25,9 @@ HEIGHT = 600
 
 class Bullet:
     def __init__(self, G, MAX_BULLET_LIVES, screen: pygame.Surface, x=40, y=450):
-        """ Конструктор класса Shot
-        x - начальное положение мяча по горизонтали
-        y - начальное положение мяча по вертикали
+        """ Конструктор класса Bullet
+        x - начальное положение снаряда по горизонтали
+        y - начальное положение снаряда по вертикали
         """
         self.screen = screen
         self.x = x
@@ -86,13 +85,13 @@ class Gun:
         '''Конструктор класса Gun
         '''
         self.screen = screen
-        self.f2_power = 10
-        self.f2_on = 0
-        self.an = 1
+        self.fire_power = 10 # мощность выстрела
+        self.is_targetting = 0 # флажок, показывающий, началось ли прицеливание
+        self.angle = 1 # угол с горизонтом под которым находится дуло пушки
         self.color = GREY
 
     def fire2_start(self):
-        self.f2_on = 1
+        self.is_targetting = 1
 
     def fire2_end(self, mouseposision=[]):
         """Выстрел мячом.
@@ -101,32 +100,30 @@ class Gun:
         Начальные значения компонент скорости мяча vx и vy зависят от положения мыши.
         """
         new_ball = Bullet(G, MAX_BALL_LIVES, self.screen)
-        self.an = math.atan2((mouseposision[1] - new_ball.y), (mouseposision[0] - new_ball.x))
-        new_ball.vx = self.f2_power * math.cos(self.an)
-        new_ball.vy = - self.f2_power * math.sin(self.an)
-        self.f2_on = 0
-        self.f2_power = 10
+        self.angle = math.atan2((mouseposision[1] - new_ball.y), (mouseposision[0] - new_ball.x))
+        new_ball.vx = self.fire_power * math.cos(self.angle)
+        new_ball.vy = - self.fire_power * math.sin(self.angle)
+        self.is_targetting = 0
+        self.fire_power = 10
         return new_ball
 
     def targetting(self, mouseposision=[]):
         """Прицеливание. Зависит от положения мыши."""
         if ((mouseposision[0] - 20) != 0):
-            self.an = math.atan((mouseposision[1] - 450) / (mouseposision[0] - 20))
+            self.angle = math.atan((mouseposision[1] - 450) / (mouseposision[0] - 20))
         else:
-            self.an = -1 * math.pi / 2
-        if self.f2_on:
-            self.color = RED
-        else:
-            self.color = GREY
+            self.angle = -1 * math.pi / 2
 
     def draw(self):
-        pygame.draw.line(self.screen, self.color, (40, 450), (40 + (20 + self.f2_power) * math.cos(self.an),
-                                                              450 + (20 + self.f2_power) * math.sin(self.an)), 5)
+        pygame.draw.line(self.screen, self.color, (40, 450), (40 + (20 + self.fire_power) * math.cos(self.angle),
+                                                              450 + (20 + self.fire_power) * math.sin(self.angle)), 5)
 
     def power_up(self):
-        if self.f2_on:
-            if self.f2_power < 100:
-                self.f2_power += 1
+        '''Накапливает силу выстрела при зажатой кнопке, делает цвет пушки красным при зажатой кнопке
+        '''
+        if self.is_targetting:
+            if self.fire_power < 100:
+                self.fire_power += 1
             self.color = RED
         else:
             self.color = GREY
@@ -135,13 +132,13 @@ class Gun:
 class Target:
     def __init__(self, screen: pygame.Surface, TARGET_VELOCITY_RANGE=[]):
         '''Конструктор класса Target
-
+        Создаёт мишень в случайном месте экрана, со случайной скоростью из диапозона
         :param screen: экран
         :param TARGET_VELOCITY_RANGE: диапозон скоростей мишени
         '''
         self.x = rnd.randint(600, 780)
         self.y = rnd.randint(300, 550)
-        self.r = rnd.randint(2, 50)
+        self.r = rnd.randint(15, 50)
         self.color = RED
         self.screen = screen
         self.live = 1
