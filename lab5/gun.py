@@ -14,7 +14,7 @@ BLACK = (0, 0, 0)
 WHITE = 0xFFFFFF
 GREY = 0x7D7D7D
 GAME_COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
-
+TARGET_SCORES = 1  # Количество очков, даваемое за цель класса Target
 
 TARGET_VELOCITY_RANGE = [5, 30]  # диапозон скоростей мишени
 FPS = 30
@@ -125,7 +125,7 @@ class Gun:
 
     def draw(self):
         pygame.draw.line(self.screen, self.color, (40, 450), (40 + (20 + self.f2_power) * math.cos(self.an),
-                                                         450 + (20 + self.f2_power) * math.sin(self.an)), 5)
+                                                              450 + (20 + self.f2_power) * math.sin(self.an)), 5)
 
     def power_up(self):
         if self.f2_on:
@@ -149,7 +149,6 @@ class Target:
         self.color = RED
         self.screen = screen
         self.live = 1
-        self.points = 0  # количество очков, набранное игроком
         self.vx = random.randint(TARGET_VELOCITY_RANGE[0], TARGET_VELOCITY_RANGE[1])
         self.vy = random.randint(TARGET_VELOCITY_RANGE[0], TARGET_VELOCITY_RANGE[1])
 
@@ -161,10 +160,6 @@ class Target:
         self.color = RED
         self.vx = random.randint(TARGET_VELOCITY_RANGE[0], TARGET_VELOCITY_RANGE[1])
         self.vy = random.randint(TARGET_VELOCITY_RANGE[0], TARGET_VELOCITY_RANGE[1])
-
-    def hit(self, points=1):
-        """Попадание шарика в цель."""
-        self.points += points
 
     def draw(self):
         pygame.draw.circle(self.screen, self.color, (self.x, self.y), self.r)
@@ -206,11 +201,12 @@ class Game_manager():
         self.gun = Gun(self.screen)  # конструируем пушку
         self.target = Target(self.screen, TARGET_VELOCITY_RANGE)  # конструируем первую цель
         self.finished = False  # флажок, показывающий, что пора выходить из цикла
+        self.scores = 0
 
     def mainloop(self):
         while not self.finished:
             self.screen.fill(WHITE)
-            text1 = self.FONT_FOR_COUNTER.render(str(self.target.points), False, (0, 0, 0))  # задаём счётчик
+            text1 = self.FONT_FOR_COUNTER.render(str(self.scores), False, (0, 0, 0))  # задаём счётчик
             self.screen.blit(text1, (10, 10))  # отображаем счётчик
             # далее отрисовка объектов
             self.gun.draw()
@@ -239,7 +235,7 @@ class Game_manager():
             for b in bullets:
                 b.move()
                 if b.hittest(self.target):  # проверка на попадание снарядом в цель
-                    self.target.hit()
+                    self.scores += TARGET_SCORES
                     self.target.new_target(TARGET_VELOCITY_RANGE)
                     bullets.remove(b)
             self.gun.power_up()
