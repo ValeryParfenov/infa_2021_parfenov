@@ -8,7 +8,7 @@ import solar_input
 import solar_objects
 import thorpy
 import time
-import numpy as np
+import math
 
 timer = None
 
@@ -81,7 +81,7 @@ def handle_events(events, menu):
             alive = False
 
 def slider_to_real(val):
-    return np.exp(5 + val)
+    return math.exp(5 + val)
 
 def slider_reaction(event):
     global time_scale
