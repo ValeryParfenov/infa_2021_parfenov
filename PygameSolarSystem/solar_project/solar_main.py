@@ -158,6 +158,7 @@ def main():
     drawer = solar_vis.Drawer(screen)
     menu, box, timer = init_ui(screen)
     perform_execution = True
+    open_file()
 
     while alive:
         handle_events(pg.event.get(), menu)
