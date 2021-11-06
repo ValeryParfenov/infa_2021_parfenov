@@ -96,10 +96,12 @@ def parse_planet_parameters(line, planet):
     planet.Vy = float(tokens[7])
 
 
-def write_space_objects_data_to_file(output_filename, space_objects):
+def write_space_objects_data_to_file(output_filename, time, space_objects):
     """Сохраняет данные о космических объектах в файл.
 
     Строки должны иметь следующий формат:
+
+    Первая строка - время
 
     Star <радиус в пикселах> <цвет> <масса> <x> <y> <Vx> <Vy>
 
@@ -111,10 +113,15 @@ def write_space_objects_data_to_file(output_filename, space_objects):
 
     **space_objects** — список объектов планет и звёзд
     """
-    with open(output_filename, 'w') as out_file:
+    with open(output_filename, 'a') as out_file:
+        out_file.write(str(time))
+        out_file.write("\n")
         for obj in space_objects:
-            print(obj.type, obj.R, obj.color, obj.m, obj.x, obj.y, obj.Vx, obj.Vy, file = out_file)
-
-
+            obj_param = [obj.type, obj.R, obj.color, obj.m, obj.x, obj.y, obj.Vx, obj.Vy]
+            for param in obj_param:
+                out_file.write(str(param))
+                out_file.write(" ")
+            out_file.write("\n")
+        out_file.write("\n")
 if __name__ == "__main__":
     print("This module is not for direct call!")

@@ -42,6 +42,7 @@ def execution(delta):
     global model_time
     global displayed_time
     solar_model.recalculate_space_objects_positions([dr.obj for dr in space_objects], delta)
+    solar_input.write_space_objects_data_to_file(OUTPUT_FILE, model_time, [dr.obj for dr in space_objects])
     model_time += delta
 
 
