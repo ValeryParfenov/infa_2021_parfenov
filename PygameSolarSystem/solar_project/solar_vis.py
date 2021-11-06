@@ -75,7 +75,7 @@ class Drawer:
         self.screen.fill((0, 0, 0))
         for figure in figures:
             figure.drawOn(self.screen)
-        
+
         ui.blit()
         ui.update()
         pg.display.update()

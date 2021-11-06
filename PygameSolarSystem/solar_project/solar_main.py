@@ -13,6 +13,8 @@ import math
 timer = None
 
 alive = True
+global OUTPUT_FILE
+OUTPUT_FILE = "output.txt"
 
 perform_execution = False
 """Флаг цикличности выполнения расчёта"""
