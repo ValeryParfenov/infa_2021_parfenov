@@ -72,13 +72,16 @@ def open_file():
     global browser
     global model_time
 
+    pause_execution()
     model_time = 0.0
     root = tk.Tk()
     root.withdraw()
     in_filename = askopenfilename(filetypes=(("Text file", ".txt"),))
-    space_objects = solar_input.read_space_objects_data_from_file(in_filename)
-    max_distance = max([max(abs(obj.obj.x), abs(obj.obj.y)) for obj in space_objects])
-    solar_vis.calculate_scale_factor(max_distance)
+    pause_execution()
+    if(in_filename):
+        space_objects = solar_input.read_space_objects_data_from_file(in_filename)
+        max_distance = max([max(abs(obj.obj.x), abs(obj.obj.y)) for obj in space_objects])
+        solar_vis.calculate_scale_factor(max_distance)
 
 def handle_events(events, menu):
     global alive
