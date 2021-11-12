@@ -4,6 +4,7 @@
 from solar_objects import Star, Planet
 from solar_vis import DrawableObject
 
+
 def read_space_objects_data_from_file(input_filename):
     """Cчитывает данные о космических объектах из файла, создаёт сами объекты
     и вызывает создание их графических образов
@@ -55,8 +56,8 @@ def parse_star_parameters(line, star):
     """
 
     tokens = line.split()
-    assert(tokens[0].lower() == 'star')
-    assert(len(tokens) == 8)
+    assert (tokens[0].lower() == 'star')
+    assert (len(tokens) == 8)
     star.R = int(tokens[1])
     star.color = tokens[2]
     star.m = float(tokens[3])
@@ -85,8 +86,8 @@ def parse_planet_parameters(line, planet):
     **planet** — объект планеты.
     """
     tokens = line.split()
-    assert(tokens[0].lower() == 'planet')
-    assert(len(tokens) == 8)
+    assert (tokens[0].lower() == 'planet')
+    assert (len(tokens) == 8)
     planet.R = int(tokens[1])
     planet.color = tokens[2]
     planet.m = float(tokens[3])
@@ -123,5 +124,7 @@ def write_space_objects_data_to_file(output_filename, time, space_objects):
                 out_file.write(" ")
             out_file.write("\n")
         out_file.write("\n")
+
+
 if __name__ == "__main__":
     print("This module is not for direct call!")

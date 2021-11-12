@@ -22,9 +22,9 @@ def calculate_force(body, space_objects):
         if body == obj:
             continue  # тело не действует гравитационной силой на само себя!
         r = math.dist((body.x, body.y), (obj.x, obj.y))
-        r = max(r, body.R + obj.R) # обработка аномалий при прохождении одного тела сквозь другое
-        body.Fx += -gravitational_constant*obj.m*body.m*(body.x - obj.x)/r**3
-        body.Fy += -gravitational_constant*obj.m*body.m*(body.y - obj.y)/r**3
+        r = max(r, body.R + obj.R)  # обработка аномалий при прохождении одного тела сквозь другое
+        body.Fx += gravitational_constant * obj.m * body.m * (obj.x - body.x) / r ** 3
+        body.Fy += gravitational_constant * obj.m * body.m * (obj.y - body.y) / r ** 3
 
 
 def move_space_object(body, dt):
@@ -34,13 +34,12 @@ def move_space_object(body, dt):
 
     **body** — тело, которое нужно переместить.
     """
-    old = body.x
-    ax = body.Fx/body.m
-    body.x += body.Vx*dt + ax*dt**2/2
-    body.Vx += ax*dt
-    ay = body.Fy/body.m
-    body.y += body.Vy*dt + ay*dt**2/2
-    body.Vy += ay*dt
+    ax = body.Fx / body.m
+    body.x += body.Vx * dt + ax * dt ** 2 / 2
+    body.Vx += ax * dt
+    ay = body.Fy / body.m
+    body.y += body.Vy * dt + ay * dt ** 2 / 2
+    body.Vy += ay * dt
 
 
 def recalculate_space_objects_positions(space_objects, dt):
